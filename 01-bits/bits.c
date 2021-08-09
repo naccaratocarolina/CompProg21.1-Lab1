@@ -20,9 +20,13 @@
  *      - As resoluções com menos operações do que a do monitor terão bonificação.
  *
  * Assinatura:
- *      Aluno: <nome>
- *      DRE: <DRE>
- *      versão do GCC utilizada: XXXX
+ *      Aluno: Carolina Naccarato
+ *      DRE: 117220395
+ *
+ *      Aluno: Milton Quillinan
+ *      DRE: 118144649
+ *
+ *      versão do GCC utilizada: gcc (GCC) 11.1.0
  *
  */
 
@@ -50,7 +54,27 @@
  *          ehPar(7) -> 0
  */
 int32_t ehPar(int32_t x) {
-    return -1;
+/*
+ * Para esta funcao usamos dois operadores: "&" e "~"
+ *
+ * Primeiramente utilizamos o operador "&" (bitwise AND) pois 
+ * ele compara dois valores usando suas representacoes binarias,
+ * retornando um novo valor: cada bit eh comparado, de forma a 
+ * retornar 1 quando ambos os bits forem iguais a 1; caso contrario,
+ * 0. Comparar x com a representacao binaria de 1 eh util pois estamos
+ * testando o bit menos significativo. Essa operacao ira retornar 1 
+ * se x for impar; 0, se for par. 
+
+ * Como gostariamos que a funcao retorne 1 caso x for par, precisamos
+ * inverter os valores. Para fazer isso, utilizamos o operador "~"
+ * (bitwise NOT) pois o mesmo tem como funcao inverter cada um dos
+ * bits de um determinado valor em sua representacao binaria. Apesar
+ * desse operador inverter o sinal da variavel x, ele serve para o
+ * nosso proposito, que eh inverter o bit menos significativo de forma
+ * que, quando fazemos (~x & 1), a funcao retorne 1 caso x for par;
+ * 0, caso for impar.
+ */
+    return (~x & 1);
 }
 
 /*
@@ -69,7 +93,28 @@ int32_t ehPar(int32_t x) {
  *          mod8(10) -> 2
  */
 int32_t mod8(int32_t x) {
-    return -1;
+/*
+ * Para esta funcao usamos um operador: "&"
+ * 
+ * Na aritmetica modular, representamos os numeros como polinomios,
+ * de forma que cada digito eh um dos coeficientes do polinomio.
+ * Portanto, na arquitetura de 32 bits, se x for positivo, ele pode 
+ * ser representado na forma: 2^31 * x_31 + ... 2^2 * x_2 + 2^1 + x_1 + 2^0 + x_0,
+ * onde x_31...x_0 sao os bits do numero.
+ * 
+ * Como desejamos encontrar x modulo 8, temos que dividir x por 8 e printar o resto
+ * dessa divisao. Ou seja, escrever x = 8 * quociente + resto. Tendo em mente que 8 = 2^3,
+ * podemos colocar o mesmo em evidencia: 
+ * x = 8 * (2^28 * x_31 + ... + 2^0 * x_3) + 2^2 * x_2 + 2^1 * x_1 + 2^0 + x_0
+ * de forma que o resto da divisao por 8 considera apenas os ultimos 3 bits do numero.
+ * Portanto, podemos aplicar uma mascara 0b0...0111 que ira zerar todos os primeiros bits
+ * do numero, exceto os ultimos 3, que eh exatamente o resto que queremos da operacao x mod 8.
+ * 
+ * Se x for um numero negativo, representando-o em complemento a dois, podemos escreve-lo como
+ * x = -2^31 * x_31 + ... 2^2 * x_2 + 2^1 * x_1 + 2^0 * x_0
+ * e, de maneira analoga, tambem conseguimos obter x mod 8 ao aplicar essa mascara.
+ */
+    return (x & 0x7);
 }
 
 /* Negativo sem -
@@ -86,7 +131,18 @@ int32_t mod8(int32_t x) {
  *          negativo(42) -> -42
  */
 int32_t negativo(int32_t x) {
-    return -1;
+/*
+ * Para esta funcao usamos um operador: "~"
+ * 
+ * Sabemos que uma das formas de representar numeros negativos utilizando
+ * numeros binarios eh atraves do complemento a dois. Para obter a representacao
+ * negativa de um numero temos que inverter todos os bits desse numero e somar 1.
+ * 
+ * Portanto, conseguimos facilmente aplicar esse algoritmo com o auxilio do operador
+ * "~" (NOT), que percorre o numero bit a bit, invertendo-os. Apos isso, basta
+ * somarmos 1 a negacao de x para obtermos o negativo dessa variavel.
+ */
+    return ~x + 1;
 }
 
 /* Implementação do & usando bitwise
@@ -105,7 +161,20 @@ int32_t negativo(int32_t x) {
  *              11 & 1011 -> 0011
  */
 int32_t bitwiseAnd(int32_t x, int32_t y) {
-    return -1;
+/*
+ * Para esta funcao usamos dois operadores: "~" e "|"
+ * 
+ * Sabemos que existe uma relacao entre os operadores "&" e "|" a partir do Teorema
+ * de De Morgan. Uma de suas leis diz que: ~(A & B) = ~A | ~B. No entanto, o resultado
+ * que queremos eh (A & B). Portanto, temos que negar ambos os lados da equacao a fim
+ * de obter o resultado desejado:
+ * ~(~(A & B)) = ~(~A | ~B)
+ * ~(~(A & B)) = ~(~A | ~B) = A & B
+ * 
+ * Substituindo por x e y, para implementar o operador AND bitwise (x & y), temos que 
+ * a expressao desejada eh ~(~x | ~y)
+ */
+    return ~(~x | ~y);
 }
 
 /* Igual sem ==
@@ -122,7 +191,20 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
  *          ehIgual(16, 8) -> 0
  */
 int32_t ehIgual(int32_t x, int32_t y) {
-    return -1;
+/*
+ * Para esta funcao usamos dois operadores: "^" e "!"
+ * 
+ * O operador "^" (XOR) compara dois valores utilizando suas representacoes binarias,
+ * retornando um novo valor. Para formar esse valor de retorno, cada bit eh comparado,
+ * retornando 1 quando os bits forem diferentes; 0, caso contrario. Portanto, quando
+ * os numeros forem identicos, o resultado sera 0. Quando eles forem diferentes, o resultado
+ * da operacao bit a bit sera qualquer coisa diferente de 0.
+ * 
+ * Dessa forma, ao fazer !(x ^ y), quando os numeros forem identicos, transformaremos o 0 em 1.
+ * Caso contrario, o que for diferente de 0 sera transformado em 0, que eh exatamente o que 
+ * queremos.
+ */
+    return !(x ^ y);
 }
 
 /* Limpa bit n
@@ -140,7 +222,27 @@ int32_t ehIgual(int32_t x, int32_t y) {
  *          limpaBitN(3, 1) -> 1
  */
 int32_t limpaBitN(int32_t x, int8_t n) {
-    return -1;
+/*
+ * Para esta funcao usamos tres operadores: "&", "~" e "<<"
+ * 
+ * O operador "<<" (bitwise left shift) desliza os bits para a esquerda,
+ * de forma que quando fazemos $a << 3, estamos multiplicando $a por 2
+ * tres vezes. Por exemplo, se fizermos: (1 << 3)
+ * Entrada: 00000001 = 1
+ * Saida:   00001000 = 8
+
+ * Portanto, se fizermos (1 << n), estamos deslocando o numero 00000001
+ * n casas decimais para a esquerda. No entanto, para limpar o bit n de x,
+ * precisamos de um numero que possua fatores em comum em todas as casas exceto
+ * na casa n. Assim, precisamos exatamente do inverso, fazendo ~(1 << n)
+ * 
+ * Uma vez que geramos esse numero, basta aplicarmos a operacao "&" (AND), pois
+ * a mesma retorna 1 somente quando os bits forem iguais. Como, obrigatoriamente,
+ * a casa n esta zerada, isso implica que o bit n retornara limpo, enquanto os 
+ * demais bits do numero x nao sao alterados.
+ * 
+ */
+    return x & ~(1 << n);
 }
 
 /*
@@ -170,7 +272,23 @@ int32_t limpaBitN(int32_t x, int8_t n) {
  *
  */
 int32_t bitEmP(int32_t x, uint8_t p) {
-    return -1;
+/*
+ * Para esta funcao usamos dois operadores: ">>" e "&"
+ * 
+ * Para executar essa operacao, usaremos o operador ">>" (right shift),
+ * que funciona de forma analoga ao left shift, mas, dessa vez, deslocando
+ * o numero para a direita. Por exemplo, se fizermos (45 >> 3), temos
+ * Entrada: 00101101
+ * Saida:   00000101
+ * 
+ * Portanto, quando fazemos (x >> p), estamos deslocando o bit que ocupa
+ * a casa p p casas para a direita, de forma que esse numero passa a ocupar
+ * a posicao 0, se tornando o bit menos significativo.
+ *
+ * Isto feito, aplicaremos uma mascara para ignorar todos os bits que nao
+ * o LSB
+ */
+    return (x >> p) & 0x1;
 }
 
 /*
@@ -196,7 +314,7 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return -1;
+    return x >> (p << 3) & 0xFF;
 }
 
 /*
@@ -241,7 +359,21 @@ int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
  *
  */
 int32_t minimo(int32_t x, int32_t y) {
-    return -1;
+/*
+ * Para esta funcao utilizamos os operadores: "^", "&" e "<"
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *
+ */
+    return y ^ ((x ^ y) & -(x < y));
 }
 
 /*
@@ -260,7 +392,7 @@ int32_t minimo(int32_t x, int32_t y) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-  return -1;
+  return ((x | (~x + 1)) >> 31) + 1;
 }
 
 void teste(int32_t saida, int32_t esperado) {
