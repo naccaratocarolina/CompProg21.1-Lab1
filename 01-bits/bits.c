@@ -427,7 +427,7 @@ int32_t negacaoLogica(int32_t x) {
  * 
  * Portanto, a logica por tras dessa expressao eh que, como nao sabemos se x ou a
  * sua negacao eh um numero negativo, quando combinamos esses dois valores com o
- * auxilio do operador logico "|" (OR), que percorre o numero bit a bit, retornando
+ * auxilio do operador logico "|" (OR), percorremos o numero bit a bit, retornando
  * 1 se um dos bits comparados forem iguais a 1; 0, caso contrario. Em seguida,
  * realizamos o deslocamento >> 31 de forma a deslocar o bit mais significativo
  * ate o menos significativo. Ate esse momento, se x = 0, o resultado parcial sera 0.
