@@ -362,16 +362,33 @@ int32_t minimo(int32_t x, int32_t y) {
 /*
  * Para esta funcao utilizamos os operadores: "^", "&" e "<"
  * 
+ * A expressao -(x < y) representa o seguinte: Se x for menor que y
+ * (condicional eh verdadeira), logo a expressao no parenteses eh 1,
+ * e toda a expressao eh -1. Caso contrario, a expressao possui valor 0.
  * 
+ * Olhando para essa mesma expressao no contexto da subexpressao do
+ * proximo nivel, ((x ^ y) & -(x < y)), temos que:
+ * ((x ^ y) & 0) => x eh maior ou igual a y
+ * ((x ^ y) & 1) => y eh maior que x
  * 
+ * Se realizarmos um AND bit a bit com 0, isso resulta em todos os bits
+ * do resultado sendo 0, entao a primeira expressao sera 0. O valor -1,
+ * assumindo a representacao de complemento de dois, tem todos os bits
+ * definidos como 1. Portanto, realizar um AND bit a bit com -1 resultara
+ * no valor do outro operando.
  * 
+ * Olhando para a proxima expressao, y ^ ((x ^ y) & -(x < y)), temos que:
+ * y ^ (0) => x eh maior ou igual a y
+ * y ^ (x ^ y) => y eh maior que x
  * 
+ * No primeiro caso, se fizermos um XOR com 0, resultano valor do outro
+ * operando, portanto, o resultado final eh y. No segundo caso, o ou 
+ * exclusivo eh associativo, entao podemos olhar ele como (y ^ y) ^ x.
+ * Sabemos que se fizermos um ou exclusivo de um numero com ele mesmo,
+ * isso resulta em 0. E, portanto, a expressao (0 ^ x) eh igual a x.
  * 
- * 
- * 
- * 
- * 
- *
+ * Dessa forma, a expressao y ^ ((x ^ y) & -(x < y)) fornece o menor numero
+ * entre as variaveis x e y.
  */
     return y ^ ((x ^ y) & -(x < y));
 }
@@ -392,7 +409,34 @@ int32_t minimo(int32_t x, int32_t y) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-  return ((x | (~x + 1)) >> 31) + 1;
+/*
+ * Para esta funcao, utilizamos os operadores: "|", "~" e ">>"
+ * 
+ * Assumindo que x eh um signed int de 32 bits, a negacao logica
+ * dessa incognita (!x) deve retornar 0 para qualquer numero diferente
+ * de zero e 1 para zero.
+ * 
+ * Como sabemos que x eh um numero inteiro com sinal (posendo ser positivo 
+ * ou negativo, temos que trabalhar com o right shift (>>), que realiza um
+ * deslicamento aritmetico. Portanto, deslocando x para a direita por 31 e
+ * sua negacao por 31:
+ * (x >> 31) | ((~x + 1) >> 31) 
+ * Um desses dois valores sera necessariamente um numero negativo e, portanto,
+ * deslocado para a direita em 31 sera 0xFFFFFFFF (se x = 0, o deslocamento para
+ * a direita sera igual a 0x0, que eh o que desejamos)
+ * 
+ * Portanto, a logica por tras dessa expressao eh que, como nao sabemos se x ou a
+ * sua negacao eh um numero negativo, quando combinamos esses dois valores com o
+ * auxilio do operador logico "|" (OR), que percorre o numero bit a bit, retornando
+ * 1 se um dos bits comparados forem iguais a 1; 0, caso contrario
+ * 
+ * Para chegar no resultado final, temos que somar 1. Isso acontece pois, se o 
+ * resultado parcial for zero, o resultado final sera 1. Se x for diferente de zero,
+ * o resultado parcial sera -2 ^ 31. Para corrigir isso, forcaremos um overflow e o 
+ * resultado final sera 0. Dessa forma, preservamos o bit mais significativo, seja
+ * quando x = 0 ou quando x != 0, que eh exatamente o que desejamos
+ */
+  return ((x >> 31) | ((~x + 1) >> 31)) + 1;
 }
 
 void teste(int32_t saida, int32_t esperado) {
