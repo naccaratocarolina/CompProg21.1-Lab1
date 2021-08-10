@@ -430,8 +430,7 @@ int32_t negacaoLogica(int32_t x) {
  * auxilio do operador logico "|" (OR), percorremos o numero bit a bit, retornando
  * 1 se um dos bits comparados forem iguais a 1; 0, caso contrario. Em seguida,
  * realizamos o deslocamento >> 31 de forma a deslocar o bit mais significativo
- * ate o menos significativo. Ate esse momento, se x = 0, o resultado parcial sera 0.
- * Se x != 0, o resultado parcial sera - 2 ^ 31
+ * ate o menos significativo.
  * 
  * Para chegar no resultado final, temos que somar 1. Isso acontece pois, se o 
  * resultado parcial for zero, o resultado final sera 1. Se x for diferente de zero,
