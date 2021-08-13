@@ -380,7 +380,7 @@ int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
  * o operador "XOR", substituindo os bytes em uma operacao bit a bit em um inteiro de 
  * 32 bits.
  */
-		return (x & ~(0xFF << (p << 3))) | (y << (p << 3));
+    return (x & ~(0xFF << (p << 3))) | (y << (p << 3));
 }
 
 /*
@@ -479,7 +479,7 @@ int32_t negacaoLogica(int32_t x) {
  * resultado final sera 0. Dessa forma, produziremos o resultado correto para quando 
  * x = 0 ou quando x != 0, que eh exatamente o que desejamos
  */
-  return ((x >> 31) | ((~x + 1) >> 31)) + 1;
+    return ((x >> 31) | ((~x + 1) >> 31)) + 1;
 }
 
 void teste(int32_t saida, int32_t esperado) {
