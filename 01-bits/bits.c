@@ -314,6 +314,27 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
+/*
+ * Para esta funcao usamos os operadores: ">>", "<<" e "&"
+ * 
+ * Como o numero 0x12345678 eh um numero em hexadecimal, para que possamos percorrer o
+ * mesmo bit a bit precisamos ter em mente a conversao entre byte e bit. Consideramos
+ * que o numero dado pode ser dividido em 4 partes, pois cada byte possui 8 bits. Portanto,
+ * a variavel p pode assumir os valores p = 0, 1, 2 ou 3.
+ * 
+ * Para deslocar bit a bit em um numero hexadecimal temos que andar 8 bits a cada byte, portanto
+ * o valor do deslocamento eh equivalente a 2 ^ 3. Por exemplo, se p = 3, precisamos deslocar
+ * 3 * 2 ^ 3 bits. Para representar esse deslocamento, fazemos (p << 3), fazendo com que p seja
+ * multiplicado por 2 ^ 3.
+ * 
+ * Isto feito, temos que aplicar esse valor de deslocamento ao x. Conseguimos realizar isso fazendo
+ * x >> (p << 3), de forma que os bits desejados serao movidos a direita, se tornando os digitos 
+ * menos significativos do numero. 
+ * 
+ * A partir do momento que temos os bits desejados ocupando os digitos menos significativos do nosso
+ * numero, basta aplicarmos uma mascara de forma que todos os outros digitos do numero sejam limpos.
+ * Dessa maneira, fazemos x >> (p << 3) & 0xFF
+ */
     return x >> (p << 3) & 0xFF;
 }
 
@@ -339,7 +360,27 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
-    return -1;
+/*
+ * Para esta funcao, utilizamos os operadores: "~", "<<", "&" e "|"
+ * 
+ * Primeiramente vamos utilizar a mesma logica da funcao limpaBitN, adaptada
+ * para byte. O objetivo nesse caso eh limpar os bits na posicao p. Portanto, 
+ * vamos criar uma mascara para fazer isso. Fazendo (0xFF << (p << 3)), limpamos
+ * os bytes que ocupam a posicao p, garantindo a conversao de bit para byte aplicando
+ * o deslocamento (p << 3). Para de fato limparmos os bits temos que combinar essa 
+ * subexpressao com x & ~(0xFF << (p << 3)), conforme fizemos em limpaBitN.
+ * 
+ * Em seguida, baseado na mesma logica do paragrafo anterior, deslocamos os bits de y
+ * para ocupar a posicao p realizando o deslocamento y << (p << 3)), respeitando o
+ * deslocamento 2 ^ 3 de byte para bit. Isso contempla bem o caso em que y = 0x00,
+ * pois caso haja um valor, ele sera inserido. Caso seja nulo, a subexpressao da esquerda
+ * ja garante a resposta correta.
+ *
+ * Para combinarmos ambos valores obtidos nas subexpressoes descritas acima, utilizamos
+ * o operador "XOR", substituindo os bytes em uma operacao bit a bit em um inteiro de 
+ * 32 bits.
+ */
+		return (x & ~(0xFF << (p << 3))) | (y << (p << 3));
 }
 
 /*
@@ -369,7 +410,7 @@ int32_t minimo(int32_t x, int32_t y) {
  * Olhando para essa mesma expressao no contexto da subexpressao do
  * proximo nivel, ((x ^ y) & -(x < y)), temos que:
  * ((x ^ y) & 0) => x eh maior ou igual a y
- * ((x ^ y) & 1) => y eh maior que x
+ * ((x ^ y) & -1) => y eh maior que x
  * 
  * Se realizarmos um AND bit a bit com 0, isso resulta em todos os bits
  * do resultado sendo 0, entao a primeira expressao sera 0. O valor -1,
